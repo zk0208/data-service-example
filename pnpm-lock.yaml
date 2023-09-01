@@ -1,9 +1,19 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   chart.js:
     specifier: ^4.3.0
     version: 4.3.0
+  highcharts:
+    specifier: ^11.1.0
+    version: 11.1.0
+  highcharts-react-official:
+    specifier: ^3.2.0
+    version: 3.2.0(highcharts@11.1.0)(react@18.2.0)
   next:
     specifier: ^13.4.2
     version: 13.4.2(react-dom@18.2.0)(react@18.2.0)
@@ -456,6 +466,20 @@ packages:
     dependencies:
       function-bind: 1.1.1
     dev: true
+
+  /highcharts-react-official@3.2.0(highcharts@11.1.0)(react@18.2.0):
+    resolution: {integrity: sha512-71IJZsLmEboYFjONpwC3NRsg6JKvtKYtS5Si3e6s6MLRSOFNOY8KILTkzvO36kjpeR/A0X3/kvvewE+GMPpkjw==}
+    peerDependencies:
+      highcharts: '>=6.0.0'
+      react: '>=16.8.0'
+    dependencies:
+      highcharts: 11.1.0
+      react: 18.2.0
+    dev: false
+
+  /highcharts@11.1.0:
+    resolution: {integrity: sha512-vhmqq6/frteWMx0GKYWwEFL25g4OYc7+m+9KQJb/notXbNtIb8KVy+ijOF7XAFqF165cq0pdLIePAmyFY5ph3g==}
+    dev: false
 
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
