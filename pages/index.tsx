@@ -13,7 +13,6 @@ import {
 import { Line } from "react-chartjs-2";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMore from 'highcharts/highcharts-more';
