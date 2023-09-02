@@ -16,6 +16,7 @@ import Link from "next/link";
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMore from 'highcharts/highcharts-more';
+import { count } from "console";
 
 
 export const config = {
@@ -213,9 +214,9 @@ export default function Home() {
           }
         />
       </div>
-      <div className="shadow-xl bg-white rounded p-4 w-full ">
+      {/* <div className="shadow-xl bg-white rounded p-4 w-full ">
         <Line options={options} data={{ labels, datasets }} />
-      </div>
+      </div> */}
 
       <footer className="flex items-center justify-center mt-4">
         <a
@@ -278,6 +279,21 @@ export function Home1() {
         text: "Crypto price & volume",
       },
     },
+    scales: {
+      A: {
+          type: 'linear',
+          position: 'left',
+          borderColor: 'rgb(53, 162, 235)',
+      },
+      B: {
+          type: 'linear',
+          position: 'right',
+          ticks: {
+              max: 1,
+              min: 0
+          }
+      }
+  }
   };
 
   const optionB = {
@@ -310,6 +326,8 @@ export function Home1() {
     {
       data: priceByTime?.data.rows.map((i) => Number(i.curr_price)),
       label: "Number of Crypto Price",
+      yAxisID : "A",
+      fill : true,
       borderColor: "rgb(53, 162, 235)",
       backgroundColor: "rgba(53, 162, 235, 0.5)",
     },
@@ -317,6 +335,8 @@ export function Home1() {
       data: priceByTime?.data.rows.map((i) => Number(i.base_volume)
       ),
       label: "Number of Crypto volume",
+      yAxisID : "B",
+      fill : true,
       borderColor: "rgb(255, 99, 132)",
       backgroundColor: "rgba(255, 99, 132, 0.5)",
     },
@@ -329,20 +349,29 @@ export function Home1() {
     title : {
       text : 'IndexCandleSticks'
     },
-    xAxis: {
-			dateTimeLabelFormats: {
-				second: '%H:%M:%S',
-				minute: '%H:%M',
-				hour: '%H:%M',
-				day: '%m-%d',
-				week: '%m-%d',
-				month: '%y-%m',
-				year: '%Y'
-			}
-		},
+    xAxis:{
+      categories : candleSticksByTime?.data.rows.map((i) => i.time),
+    },
+    rangeSelector : {
+      buttons :[{
+        type :'hour',
+        count : 1,
+        text : '1h'
+      },{
+        type :'day',
+        count : 1,
+        text : '1D'
+      },{
+        type :'all',
+        count : 1,
+        text : 'all'
+      }],
+      selected : 1,
+      inputEnabled : true
+    },
 		tooltip: {
 			split: false,
-			shared: true,
+			// shared: true,
 		},
     yAxis: [{
 			labels: {
@@ -378,6 +407,7 @@ export function Home1() {
       upColor: 'red',
       upLineColor: 'red',
       tooltip: {
+        valueDecimals : 2
 			},
 			id: 'sz'
     },]
@@ -407,10 +437,12 @@ export function Home1() {
           </div>
         </header>
         <Line options={options} data={ { labels, datasets }} />
+      </div>
+      <div className="shadow-xl bg-white rounded p-4">
         <HighchartsReact
               highcharts = {Highcharts}
               options = {optionINdex}></HighchartsReact>
-      </div>
+        </div>
 
       <div className="flex gap-4 flex-col md:flex-row md:min-h-[392px]">
         <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
