@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  scales,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { useState } from "react";
@@ -16,7 +17,6 @@ import Link from "next/link";
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMore from 'highcharts/highcharts-more';
-import { count } from "console";
 
 
 export const config = {
@@ -30,7 +30,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  scales
 );
 
 const fetcher: Fetcher<any, any> = (
@@ -281,18 +282,13 @@ export function Home1() {
     },
     scales: {
       A: {
-          type: 'linear',
-          position: 'left',
-          borderColor: 'rgb(53, 162, 235)',
-      },
-      B: {
-          type: 'linear',
-          position: 'right',
-          ticks: {
-              max: 1,
-              min: 0
-          }
-      }
+        type: 'linear',
+        position: 'left',
+    },
+    B: {
+        type: 'linear',
+        position: 'right',
+    }
   }
   };
 
@@ -407,7 +403,7 @@ export function Home1() {
       upColor: 'red',
       upLineColor: 'red',
       tooltip: {
-        valueDecimals : 2
+        valueDecimals : 3
 			},
 			id: 'sz'
     },]
@@ -436,7 +432,34 @@ export function Home1() {
             </select>
           </div>
         </header>
-        <Line options={options} data={ { labels, datasets }} />
+        <Line options={{
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Crypto price & volume",
+      },
+    },
+    scales: {
+      A: {
+        type: 'linear',
+        position: 'left',
+        ticks :{
+          color : 'rgb(53, 162, 235)',
+        }
+    },
+    B: {
+        type: 'linear',
+        position: 'right',
+        ticks : {
+          color : 'rgb(255, 99, 132)',
+        }
+    }
+  }
+  }} data={ { labels, datasets }} />
       </div>
       <div className="shadow-xl bg-white rounded p-4">
         <HighchartsReact
