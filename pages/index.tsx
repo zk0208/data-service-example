@@ -408,6 +408,19 @@ export function Home1() {
 			id: 'sz'
     },]
   }
+
+  function Chartk(optionk:Highcharts.Options) {
+    if(typeof Highcharts == 'object') {
+      HighchartsMore(Highcharts)
+    }
+    return (
+      <>      <HighchartsReact
+      highcharts = {Highcharts}
+      options = {optionINdex}></HighchartsReact>
+      </>
+      );
+  }
+
   if (typeof Highcharts === 'object') {
     HighchartsMore(Highcharts)
   }
@@ -462,9 +475,7 @@ export function Home1() {
   }} data={ { labels, datasets }} />
       </div>
       <div className="shadow-xl bg-white rounded p-4">
-        <HighchartsReact
-              highcharts = {Highcharts}
-              options = {optionINdex}></HighchartsReact>
+        <Chartk></Chartk>
         </div>
 
       <div className="flex gap-4 flex-col md:flex-row md:min-h-[392px]">
