@@ -244,8 +244,8 @@ export default function Home() {
 export function Home1() {
   const [exchange, setExchange] = useState("OKX");
   const [instid, setInstId] = useState("BTC/USDT");
-  const [startTime, setStartTime] = useState("2023-08-24 13:41:10");
-  const [endTime, setEndTime] = useState("2023-09-01 15:49:26");
+  const [startTime, setStartTime] = useState("2023-08-20 13:41:10");
+  const [endTime, setEndTime] = useState("2023-09-04 00:00:00");
   
 
   const { data: hotRankingByBaseVolume } = useSWR(
