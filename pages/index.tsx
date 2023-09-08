@@ -1,6 +1,7 @@
 import useSWR, { Fetcher } from "swr";
 import Image from "next/image";
 import {
+  Colors,
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -10,6 +11,7 @@ import {
   Tooltip,
   Legend,
   scales,
+  ChartData,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { useState } from "react";
@@ -17,6 +19,7 @@ import Link from "next/link";
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMore from 'highcharts/highcharts-more';
+import moment from "moment";
 
 
 export const config = {
@@ -24,6 +27,7 @@ export const config = {
 };
 
 ChartJS.register(
+  Colors,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -58,6 +62,9 @@ type PriceChangeByexchange = ResponseData<{ curr_price: string; update_time: str
 type PriceByTime = ResponseData<{ curr_price: string; base_volume: string; update_time: string}>;
 
 type ExchangeByInstID = ResponseData<{ exchange: string }>;
+
+// prettier-ignore
+type DynamicRanking = ResponseData<{ hot_score: string; time: string }>;
 
 function RankList({
   data,
@@ -141,7 +148,7 @@ export default function Home() {
   const [exchange, setExchange] = useState("OKX");
   const [instid, setInstId] = useState("BTC/USDT");
   const [startTime, setStartTime] = useState("2023-08-20 00:00:00");
-  const [endTime, setEndTime] = useState("2023-09-04 00:00:00");
+  const [endTime, setEndTime] = useState("2023-09-21 16:05:14");
   const { data: hotRankingByBaseVolume } = useSWR(
     `/api/gateway/get_hot_ranking`,
     fetcher as Fetcher<HotRankingByBaseVolume, string>
@@ -153,6 +160,10 @@ export default function Home() {
   const { data: exchangeByInstID } = useSWR(
     `/api/gateway/get_exchange_by_instid?instid=${instid}`,
     fetcher as Fetcher<ExchangeByInstID, string>
+  );
+  const { data: dynamicRanking } = useSWR(
+    `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${instid}`,
+    fetcher as Fetcher<DynamicRanking, string>
   );
 
   const options = {
@@ -166,33 +177,148 @@ export default function Home() {
         text: "Crypto price & volume",
       },
     },
+    scales:{
+      y:{
+        display:true,
+        type: 'logarithmic',
+      }
+    },
   };
 
   const labels_instid = hotRankingByBaseVolume?.data.rows.map((i) => i.instid);
-  const lables_exchange = exchangeByInstID?.data.rows.map((i) => i.exchange);
-  const labels = priceByTime?.data.rows.map((i) => i.update_time);
-  const datasets = [
+
+  // var i = 0;
+  // const { data: dynamicRanking } = useSWR(
+  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${instid}`,
+  //   fetcher as Fetcher<DynamicRanking, string>
+  // );
+  // const { data: dynamicRanking2 } = useSWR(
+  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${labels_instid?labels_instid[i+1]:instid}`,
+  //   fetcher as Fetcher<DynamicRanking, string>
+  // );
+  // const { data: dynamicRanking3 } = useSWR(
+  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${labels_instid?labels_instid[i+2]:instid}`,
+  //   fetcher as Fetcher<DynamicRanking, string>
+  // );
+
+  function getrandomColor(){
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;  
+  }
+  // var labeltime : string[] | undefined = [];
+  // for (let i = 0; i < 10; i++) {
+  //   labeltime.push(moment('2023-08-24 13:40').add(i,'hours').format("YYYY-MM-DD hh:mm"));
+  // }
+
+  // const datas = [{
+  //   data : dynamicRanking?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+  //   // data:[1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i],
+  //   label: '1',
+  //   borderColor: getrandomColor(),
+  //   backgroundColor: getrandomColor(),
+  // },{
+  //   data : dynamicRanking2?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+  //   // data:[1,1,1,1,1,1,1,1,1,1],
+  //   label: '2',
+  //   borderColor: getrandomColor(),
+  //   backgroundColor: getrandomColor(),
+  // },{
+  //   data : dynamicRanking3?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+  //   // data:[1,1,1,1,1,1,1,1,1,1],
+  //   label: '3',
+  //   borderColor: getrandomColor(),
+  //   backgroundColor: getrandomColor(),
+  // },];
+  // var cryptos = hotRankingByBaseVolume?.data.rows.slice(0,10).map((i)=>i.instid);
+
+  function HotRankingLists(){
+    var labeltime : string[] | undefined = [];
+    var dataranksets = [];
+    let startT = moment('2023-08-20 00:00').format("YYYY-MM-DD hh:mm");
+    // var dynamicranks : DynamicRanking[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const crypto = labels_instid? labels_instid[i] : 'BTC/USDT';
+      let cry = crypto;
+      console.log(crypto);
+      const { data: dynamicRanking } = useSWR(
+        `/api/gateway/get_hot_score_dynamic?instid=${cry}&start_time=${startTime}&end_time=${endTime}`,
+        fetcher as Fetcher<DynamicRanking, string>
+      );
+      // const li = dynamicRanking?.data.rows.map((j) => j.hot_score);
+      //   console.log(li?li[i]:"d");
+      // setInstId(crypto);
+      let rank = dynamicRanking;
+      labeltime.push(moment(startT).add(i,'days').format("YYYY-MM-DD hh:mm"));
+      
+      dataranksets.push({
+        data : dynamicRanking?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+        label: crypto,
+        borderColor: getrandomColor(),
+        backgroundColor: getrandomColor(),
+      })
+
+    }
+    
+
+    return (
+    <>
+    <Line options={{
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Dynamic Cryptocurrency ranking",
+      },
+    },
+    scales:{
+      y:{
+        display:true,
+        type: 'logarithmic',
+      }
+    },
+  }} data={{labels: labeltime, datasets : dataranksets}}/>
+    </>
+    )
+  }
+
+  const dataset = [
     {
-      data: priceByTime?.data.rows.map((i) => Number(i.curr_price)),
+      data: priceByTime?.data.rows.slice(0,10).map((i) => Number(i.curr_price)),
       label: "Number of Crypto Price",
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      // borderColor: "rgb(53, 162, 235)",
+      backgroundColor: getrandomColor()
+      // backgroundColor: ,
     },
     {
-      data: priceByTime?.data.rows.map((i) => Number(i.base_volume)
-      ),
+      data: priceByTime?.data.rows.slice(0,10).map((i) => Number(i.base_volume)),
       label: "Number of Crypto volume",
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      // borderColor: "rgb(255, 99, 132)",
+      // backgroundColor: "rgba(255, 99, 132, 0.5)",
+      backgroundColor: getrandomColor()
+    },
+    {
+      data: dynamicRanking?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+      // data:[1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i],
+      label: '1',
+      borderColor: getrandomColor(),
+      backgroundColor: getrandomColor(),
     },
   ];
 
   return (
-    <div className="flex flex-col max-w-[780px] min-h-screen mx-auto gap-4 pt-8">
+    <div className="flex flex-col max-w-[880px] min-h-screen mx-auto gap-4 pt-8">
       <header className="text-center font-bold text-xl text-red-600">
         Web3 Application Demo with TCDS
       </header>
-      <div className="shadow-xl bg-white rounded p-4 w-full ">
+      <div className="shadow-xl bg-white rounded p-4 w-full md:flex-row md:min-h-[500px]">
         <header className="flex justify-center">
           <div className="font-bold">Top Cryptocurrency</div>
         </header>
@@ -201,23 +327,27 @@ export default function Home() {
         </div>
 
         <div className="flex justify-between ml-20 mr-20 mt-3 mb-2 text-xs font-bold text-gray-500">
-          <div>index</div>
+          <div>Index</div>
           <div>Symbol</div>
           <div>Hot_Score</div>
         </div>
         <RankList
           bg="bg-blue-50"
           data={
-            hotRankingByBaseVolume?.data.rows.slice(0, 10).map((i) => ({
+            hotRankingByBaseVolume?.data.rows.slice(0, 15).map((i) => ({
               name: i.instid,
               value: Number(i.hot_score),
             })) ?? []
           }
         />
       </div>
-      {/* <div className="shadow-xl bg-white rounded p-4 w-full ">
-        <Line options={options} data={{ labels, datasets }} />
-      </div> */}
+      
+      <div className="shadow-xl bg-white rounded p-4 w-full md:flex-row md:min-h-[500px]">
+        <div>
+        {/* <Line options={options} data={{labels:labeltime, datasets:dataset}} /> */}
+        <HotRankingLists></HotRankingLists>
+        </div>
+      </div>
 
       <footer className="flex items-center justify-center mt-4">
         <a
@@ -305,14 +435,15 @@ export function Home1() {
     },
   };
 
-  const LabelB = priceChangeByexchange?.data.rows.map((i) => i.update_time);
+  // const LabelB = priceChangeByexchange?.data.rows.map((i) => i.update_time);
+  const LabelB = candleSticksByTime?.data.rows.slice(200,-1).map((i) => i.time);
   const labels_instid = hotRankingByBaseVolume?.data.rows.map((i) => i.instid);
   const lables_exchange = exchangeByInstID?.data.rows.map((i) => i.exchange);
   const labels = priceByTime?.data.rows.map((i) => i.update_time);
 
   const dataB = [
     {
-      data: priceChangeByexchange?.data.rows.map((i) => Number(i.curr_price)),
+      data: candleSticksByTime?.data.rows.slice(200,-1).map((i) => Number(i.close_price)),
       label: "Number of Crypto Price",
       borderColor: "rgb(53, 162, 235)",
       backgroundColor: "rgba(53, 162, 235, 0.5)",
@@ -427,7 +558,7 @@ export function Home1() {
   // const tmp = Highcharts.chart('container',optionINdex)
 
   return (
-    <div className="flex flex-col max-w-[780px] min-h-screen mx-auto gap-4 pt-8">
+    <div className="flex flex-col max-w-[880px] min-h-screen mx-auto gap-4 pt-8">
       <div className="shadow-xl bg-white rounded p-4 w-full ">
         <header className="flex justify-between font-bold">
           <div className="text-xl text-blue-400">
@@ -474,14 +605,14 @@ export function Home1() {
   }
   }} data={ { labels, datasets }} />
       </div>
-      <div className="shadow-xl bg-white rounded p-4">
+        <div className="shadow-xl bg-white rounded p-4 md:flex-row md:min-h-[500px]">
         <Chartk></Chartk>
         </div>
 
-      <div className="flex gap-4 flex-col md:flex-row md:min-h-[392px]">
+      <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
         <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
           <header className="flex justify-between">
-            <div className="font-bold">Exange</div>
+            <div className="font-bold">Exchange</div>
 
             <div className="text-xs flex items-center">
               <span className="font-bold mr-1">exchange:</span>
