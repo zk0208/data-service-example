@@ -16,9 +16,6 @@ import {
 import { Line } from "react-chartjs-2";
 import { useState } from "react";
 import Link from "next/link";
-import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
-import HighchartsMore from 'highcharts/highcharts-more';
 import moment from "moment";
 
 
@@ -94,7 +91,7 @@ function RankList({
           <div
             className="ml-20 text-md p-1 max-w-[80%] hover:underline z-10"
           >
-            <Link rel="stylesheet" href={{pathname:"/price",query:{name:i.name}}}>
+            <Link rel="stylesheet" href={{pathname:"/price", query:{name:i.name}}}>
               {/* <setIns></> */}
               {i.name}
             </Link>
@@ -145,7 +142,7 @@ function ExchangeList({
 }
 
 export default function Home() {
-  const [exchange, setExchange] = useState("OKX");
+
   const [instid, setInstId] = useState("BTC/USDT");
   const [startTime, setStartTime] = useState("2023-08-20 00:00:00");
   const [endTime, setEndTime] = useState("2023-09-21 16:05:14");
@@ -156,10 +153,6 @@ export default function Home() {
   const { data: priceByTime } = useSWR(
     `/api/gateway/get_trading_data_by_crypto?instid=${instid}&start_time=${startTime}&end_time=${endTime}`,
     fetcher as Fetcher<PriceByTime, string>
-  );
-  const { data: exchangeByInstID } = useSWR(
-    `/api/gateway/get_exchange_by_instid?instid=${instid}`,
-    fetcher as Fetcher<ExchangeByInstID, string>
   );
   const { data: dynamicRanking } = useSWR(
     `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${instid}`,
@@ -187,20 +180,6 @@ export default function Home() {
 
   const labels_instid = hotRankingByBaseVolume?.data.rows.map((i) => i.instid);
 
-  // var i = 0;
-  // const { data: dynamicRanking } = useSWR(
-  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${instid}`,
-  //   fetcher as Fetcher<DynamicRanking, string>
-  // );
-  // const { data: dynamicRanking2 } = useSWR(
-  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${labels_instid?labels_instid[i+1]:instid}`,
-  //   fetcher as Fetcher<DynamicRanking, string>
-  // );
-  // const { data: dynamicRanking3 } = useSWR(
-  //   `/api/gateway/get_hot_score_dynamic?start_time=${startTime}&end_time=${endTime}&instid=${labels_instid?labels_instid[i+2]:instid}`,
-  //   fetcher as Fetcher<DynamicRanking, string>
-  // );
-
   function getrandomColor(){
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
@@ -209,31 +188,6 @@ export default function Home() {
     }
     return color;  
   }
-  // var labeltime : string[] | undefined = [];
-  // for (let i = 0; i < 10; i++) {
-  //   labeltime.push(moment('2023-08-24 13:40').add(i,'hours').format("YYYY-MM-DD hh:mm"));
-  // }
-
-  // const datas = [{
-  //   data : dynamicRanking?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
-  //   // data:[1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i,1+i],
-  //   label: '1',
-  //   borderColor: getrandomColor(),
-  //   backgroundColor: getrandomColor(),
-  // },{
-  //   data : dynamicRanking2?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
-  //   // data:[1,1,1,1,1,1,1,1,1,1],
-  //   label: '2',
-  //   borderColor: getrandomColor(),
-  //   backgroundColor: getrandomColor(),
-  // },{
-  //   data : dynamicRanking3?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
-  //   // data:[1,1,1,1,1,1,1,1,1,1],
-  //   label: '3',
-  //   borderColor: getrandomColor(),
-  //   backgroundColor: getrandomColor(),
-  // },];
-  // var cryptos = hotRankingByBaseVolume?.data.rows.slice(0,10).map((i)=>i.instid);
 
   function HotRankingLists(){
     var labeltime : string[] | undefined = [];
@@ -244,7 +198,6 @@ export default function Home() {
     for (let i = 0; i < 10; i++) {
       const crypto = labels_instid? labels_instid[i] : 'BTC/USDT';
       let cry = crypto;
-      console.log(crypto);
       const { data: dynamicRanking } = useSWR(
         `/api/gateway/get_hot_score_dynamic?instid=${cry}&start_time=${startTime}&end_time=${endTime}`,
         fetcher as Fetcher<DynamicRanking, string>
@@ -278,12 +231,12 @@ export default function Home() {
         text: "Dynamic Cryptocurrency ranking",
       },
     },
-    scales:{
-      y:{
-        display:true,
-        type: 'logarithmic',
-      }
-    },
+    // scales:{
+    //   y:{
+    //     display:true,
+    //     type: 'logarithmic',
+    //   }
+    // },
   }} data={{labels: labeltime, datasets : dataranksets}}/>
     </>
     )
@@ -336,7 +289,7 @@ export default function Home() {
           data={
             hotRankingByBaseVolume?.data.rows.slice(0, 15).map((i) => ({
               name: i.instid,
-              value: Number(i.hot_score),
+              value: Number(Number(i.hot_score).toFixed(2)),
             })) ?? []
           }
         />
@@ -345,6 +298,7 @@ export default function Home() {
       <div className="shadow-xl bg-white rounded p-4 w-full md:flex-row md:min-h-[500px]">
         <div>
         {/* <Line options={options} data={{labels:labeltime, datasets:dataset}} /> */}
+        hot_score = crypto_info.base_volumn * crypto_info.curr_price
         <HotRankingLists></HotRankingLists>
         </div>
       </div>
@@ -371,282 +325,282 @@ export default function Home() {
   );
 }
 
-export function Home1() {
-  const [exchange, setExchange] = useState("OKX");
-  const [instid, setInstId] = useState("BTC/USDT");
-  const [startTime, setStartTime] = useState("2023-08-20 00:00:00");
-  const [endTime, setEndTime] = useState("2023-09-04 00:00:00");
+// export function Home1() {
+//   const [exchange, setExchange] = useState("OKX");
+//   const [instid, setInstId] = useState("BTC/USDT");
+//   const [startTime, setStartTime] = useState("2023-08-20 00:00:00");
+//   const [endTime, setEndTime] = useState("2023-09-04 00:00:00");
   
 
-  const { data: hotRankingByBaseVolume } = useSWR(
-    `/api/gateway/get_hot_ranking`,
-    fetcher as Fetcher<HotRankingByBaseVolume, string>
-  );
-  const { data: candleSticksByTime} = useSWR(
-    `/api/gateway/get_index_candlesticks?exchange=${exchange}&instid=${instid}&min_time=${startTime}&max_time=${endTime}`,
-    fetcher as Fetcher<CandleSticksByTime, string>
-  );
-  const { data: priceChangeByexchange } = useSWR(
-    `/api/gateway/get_trading_data_by_exchange?exchange=${exchange}&instid=${instid}`,
-    fetcher as Fetcher<PriceChangeByexchange, string>
-  );
-  const { data: priceByTime } = useSWR(
-    `/api/gateway/get_trading_data_by_crypto?instid=${instid}&start_time=${startTime}&end_time=${endTime}`,
-    fetcher as Fetcher<PriceByTime, string>
-  );
-  const { data: exchangeByInstID } = useSWR(
-    `/api/gateway/get_exchange_by_instid?instid=${instid}`,
-    fetcher as Fetcher<ExchangeByInstID, string>
-  );
+//   const { data: hotRankingByBaseVolume } = useSWR(
+//     `/api/gateway/get_hot_ranking`,
+//     fetcher as Fetcher<HotRankingByBaseVolume, string>
+//   );
+//   const { data: candleSticksByTime} = useSWR(
+//     `/api/gateway/get_index_candlesticks?exchange=${exchange}&instid=${instid}&min_time=${startTime}&max_time=${endTime}`,
+//     fetcher as Fetcher<CandleSticksByTime, string>
+//   );
+//   const { data: priceChangeByexchange } = useSWR(
+//     `/api/gateway/get_trading_data_by_exchange?exchange=${exchange}&instid=${instid}`,
+//     fetcher as Fetcher<PriceChangeByexchange, string>
+//   );
+//   const { data: priceByTime } = useSWR(
+//     `/api/gateway/get_trading_data_by_crypto?instid=${instid}&start_time=${startTime}&end_time=${endTime}`,
+//     fetcher as Fetcher<PriceByTime, string>
+//   );
+//   const { data: exchangeByInstID } = useSWR(
+//     `/api/gateway/get_exchange_by_instid?instid=${instid}`,
+//     fetcher as Fetcher<ExchangeByInstID, string>
+//   );
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Crypto price & volume",
-      },
-    },
-    scales: {
-      A: {
-        type: 'linear',
-        position: 'left',
-    },
-    B: {
-        type: 'linear',
-        position: 'right',
-    }
-  }
-  };
+//   const options = {
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: "top" as const,
+//       },
+//       title: {
+//         display: true,
+//         text: "Crypto price & volume",
+//       },
+//     },
+//     scales: {
+//       A: {
+//         type: 'linear',
+//         position: 'left',
+//     },
+//     B: {
+//         type: 'linear',
+//         position: 'right',
+//     }
+//   }
+//   };
 
-  const optionB = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Crypto price",
-      },
-    },
-  };
+//   const optionB = {
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: "top" as const,
+//       },
+//       title: {
+//         display: true,
+//         text: "Crypto price",
+//       },
+//     },
+//   };
 
-  // const LabelB = priceChangeByexchange?.data.rows.map((i) => i.update_time);
-  const LabelB = candleSticksByTime?.data.rows.slice(200,-1).map((i) => i.time);
-  const labels_instid = hotRankingByBaseVolume?.data.rows.map((i) => i.instid);
-  const lables_exchange = exchangeByInstID?.data.rows.map((i) => i.exchange);
-  const labels = priceByTime?.data.rows.map((i) => i.update_time);
+//   // const LabelB = priceChangeByexchange?.data.rows.map((i) => i.update_time);
+//   const LabelB = candleSticksByTime?.data.rows.slice(200,-1).map((i) => i.time);
+//   const labels_instid = hotRankingByBaseVolume?.data.rows.map((i) => i.instid);
+//   const lables_exchange = exchangeByInstID?.data.rows.map((i) => i.exchange);
+//   const labels = priceByTime?.data.rows.map((i) => i.update_time);
 
-  const dataB = [
-    {
-      data: candleSticksByTime?.data.rows.slice(200,-1).map((i) => Number(i.close_price)),
-      label: "Number of Crypto Price",
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    }];
+//   const dataB = [
+//     {
+//       data: candleSticksByTime?.data.rows.slice(200,-1).map((i) => Number(i.close_price)),
+//       label: "Number of Crypto Price",
+//       borderColor: "rgb(53, 162, 235)",
+//       backgroundColor: "rgba(53, 162, 235, 0.5)",
+//     }];
 
-  const datasets = [
-    {
-      data: priceByTime?.data.rows.map((i) => Number(i.curr_price)),
-      label: "Number of Crypto Price",
-      yAxisID : "A",
-      fill : true,
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-    {
-      data: priceByTime?.data.rows.map((i) => Number(i.base_volume)
-      ),
-      label: "Number of Crypto volume",
-      yAxisID : "B",
-      fill : true,
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ];
+//   const datasets = [
+//     {
+//       data: priceByTime?.data.rows.map((i) => Number(i.curr_price)),
+//       label: "Number of Crypto Price",
+//       yAxisID : "A",
+//       fill : true,
+//       borderColor: "rgb(53, 162, 235)",
+//       backgroundColor: "rgba(53, 162, 235, 0.5)",
+//     },
+//     {
+//       data: priceByTime?.data.rows.map((i) => Number(i.base_volume)
+//       ),
+//       label: "Number of Crypto volume",
+//       yAxisID : "B",
+//       fill : true,
+//       borderColor: "rgb(255, 99, 132)",
+//       backgroundColor: "rgba(255, 99, 132, 0.5)",
+//     },
+//   ];
 
-  const dataIndex = candleSticksByTime?.data.rows.map((i) => [i.time, Number(i.open_price), Number(i.high_price), Number(i.low_price), Number(i.close_price)])
-  console.log(dataIndex)
+//   const dataIndex = candleSticksByTime?.data.rows.map((i) => [i.time, Number(i.open_price), Number(i.high_price), Number(i.low_price), Number(i.close_price)])
+//   console.log(dataIndex)
 
-  const optionINdex:Highcharts.Options ={
-    title : {
-      text : 'IndexCandleSticks'
-    },
-    xAxis:{
-      categories : candleSticksByTime?.data.rows.map((i) => i.time),
-    },
-    rangeSelector : {
-      buttons :[{
-        type :'hour',
-        count : 1,
-        text : '1h'
-      },{
-        type :'day',
-        count : 1,
-        text : '1D'
-      },{
-        type :'all',
-        count : 1,
-        text : 'all'
-      }],
-      selected : 1,
-      inputEnabled : true
-    },
-		tooltip: {
-			split: false,
-			// shared: true,
-		},
-    yAxis: [{
-			labels: {
-				align: 'right',
-				x: -3
-			},
-			title: {
-				text: '股价'
-			},
-			height: '90%',
-			resize: {
-				enabled: true
-			},
-			lineWidth: 2
-		}],
-    plotOptions:{
-      candlestick : {
-        tooltip: {
-          pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {series.name}</b><br/>' +
-          '开盘: {point.open}<br/>' +
-          '最高: {point.high}<br/>' +
-          '最低: {point.low}<br/>' +
-          '收盘: {point.close}<br/>'
-        }
-      }
-    },
-    series : [{
-      type : 'candlestick',
-      name : 'candles',
-      data : dataIndex,
-      color: 'green',
-      lineColor: 'green',
-      upColor: 'red',
-      upLineColor: 'red',
-      tooltip: {
-        valueDecimals : 3
-			},
-			id: 'sz'
-    },]
-  }
+//   const optionINdex:Highcharts.Options ={
+//     title : {
+//       text : 'IndexCandleSticks'
+//     },
+//     xAxis:{
+//       categories : candleSticksByTime?.data.rows.map((i) => i.time),
+//     },
+//     rangeSelector : {
+//       buttons :[{
+//         type :'hour',
+//         count : 1,
+//         text : '1h'
+//       },{
+//         type :'day',
+//         count : 1,
+//         text : '1D'
+//       },{
+//         type :'all',
+//         count : 1,
+//         text : 'all'
+//       }],
+//       selected : 1,
+//       inputEnabled : true
+//     },
+// 		tooltip: {
+// 			split: false,
+// 			// shared: true,
+// 		},
+//     yAxis: [{
+// 			labels: {
+// 				align: 'right',
+// 				x: -3
+// 			},
+// 			title: {
+// 				text: '股价'
+// 			},
+// 			height: '90%',
+// 			resize: {
+// 				enabled: true
+// 			},
+// 			lineWidth: 2
+// 		}],
+//     plotOptions:{
+//       candlestick : {
+//         tooltip: {
+//           pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {series.name}</b><br/>' +
+//           '开盘: {point.open}<br/>' +
+//           '最高: {point.high}<br/>' +
+//           '最低: {point.low}<br/>' +
+//           '收盘: {point.close}<br/>'
+//         }
+//       }
+//     },
+//     series : [{
+//       type : 'candlestick',
+//       name : 'candles',
+//       data : dataIndex,
+//       color: 'green',
+//       lineColor: 'green',
+//       upColor: 'red',
+//       upLineColor: 'red',
+//       tooltip: {
+//         valueDecimals : 3
+// 			},
+// 			id: 'sz'
+//     },]
+//   }
 
-  function Chartk(optionk:Highcharts.Options) {
-    if(typeof Highcharts == 'object') {
-      HighchartsMore(Highcharts)
-    }
-    return (
-      <>      <HighchartsReact
-      highcharts = {Highcharts}
-      options = {optionINdex}></HighchartsReact>
-      </>
-      );
-  }
+//   function Chartk(optionk:Highcharts.Options) {
+//     if(typeof Highcharts == 'object') {
+//       HighchartsMore(Highcharts)
+//     }
+//     return (
+//       <>      <HighchartsReact
+//       highcharts = {Highcharts}
+//       options = {optionINdex}></HighchartsReact>
+//       </>
+//       );
+//   }
 
-  if (typeof Highcharts === 'object') {
-    HighchartsMore(Highcharts)
-  }
-  // const tmp = Highcharts.chart('container',optionINdex)
+//   if (typeof Highcharts === 'object') {
+//     HighchartsMore(Highcharts)
+//   }
+//   // const tmp = Highcharts.chart('container',optionINdex)
 
-  return (
-    <div className="flex flex-col max-w-[880px] min-h-screen mx-auto gap-4 pt-8">
-      <div className="shadow-xl bg-white rounded p-4 w-full ">
-        <header className="flex justify-between font-bold">
-          <div className="text-xl text-blue-400">
-            <Link rel="stylesheet" href="/">go back</Link>
-          </div>
+//   return (
+//     <div className="flex flex-col max-w-[880px] min-h-screen mx-auto gap-4 pt-8">
+//       <div className="shadow-xl bg-white rounded p-4 w-full ">
+//         <header className="flex justify-between font-bold">
+//           <div className="text-xl text-blue-400">
+//             <Link rel="stylesheet" href="/">go back</Link>
+//           </div>
           
-          <div className="text-xs flex items-center">
-            <span className="font-bold mr-1">instid:</span>
-            <select value={instid} onChange={(e) => setInstId(e.target.value)}>
-              {labels_instid?.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </select>
-          </div>
-        </header>
-        <Line options={{
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Crypto price & volume",
-      },
-    },
-    scales: {
-      A: {
-        type: 'linear',
-        position: 'left',
-        ticks :{
-          color : 'rgb(53, 162, 235)',
-        }
-    },
-    B: {
-        type: 'linear',
-        position: 'right',
-        ticks : {
-          color : 'rgb(255, 99, 132)',
-        }
-    }
-  }
-  }} data={ { labels, datasets }} />
-      </div>
-        <div className="shadow-xl bg-white rounded p-4 md:flex-row md:min-h-[500px]">
-        <Chartk></Chartk>
-        </div>
+//           <div className="text-xs flex items-center">
+//             <span className="font-bold mr-1">instid:</span>
+//             <select value={instid} onChange={(e) => setInstId(e.target.value)}>
+//               {labels_instid?.map((i) => (
+//                 <option key={i} value={i}>
+//                   {i}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+//         </header>
+//         <Line options={{
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: "top" as const,
+//       },
+//       title: {
+//         display: true,
+//         text: "Crypto price & volume",
+//       },
+//     },
+//     scales: {
+//       A: {
+//         type: 'linear',
+//         position: 'left',
+//         ticks :{
+//           color : 'rgb(53, 162, 235)',
+//         }
+//     },
+//     B: {
+//         type: 'linear',
+//         position: 'right',
+//         ticks : {
+//           color : 'rgb(255, 99, 132)',
+//         }
+//     }
+//   }
+//   }} data={ { labels, datasets }} />
+//       </div>
+//         <div className="shadow-xl bg-white rounded p-4 md:flex-row md:min-h-[500px]">
+//         <Chartk></Chartk>
+//         </div>
 
-      <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
-        <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
-          <header className="flex justify-between">
-            <div className="font-bold">Exchange</div>
+//       <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
+//         <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
+//           <header className="flex justify-between">
+//             <div className="font-bold">Exchange</div>
 
-            <div className="text-xs flex items-center">
-              <span className="font-bold mr-1">exchange:</span>
-              <select value={exchange} onChange={(e) => setExchange(e.target.value)}>
-                {lables_exchange?.map((i) => (
-                  <option key={i} value={i}>
-                    {i}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </header>
-          <Line options={optionB} data={{labels: LabelB, datasets: dataB}} />
-        </div>
-      </div>
+//             <div className="text-xs flex items-center">
+//               <span className="font-bold mr-1">exchange:</span>
+//               <select value={exchange} onChange={(e) => setExchange(e.target.value)}>
+//                 {lables_exchange?.map((i) => (
+//                   <option key={i} value={i}>
+//                     {i}
+//                   </option>
+//                 ))}
+//               </select>
+//             </div>
+//           </header>
+//           <Line options={optionB} data={{labels: LabelB, datasets: dataB}} />
+//         </div>
+//       </div>
 
-      <footer className="flex items-center justify-center mt-4">
-        <a
-          className="flex gap-2"
-          href="https://tidbcloud.com/?utm_source=dataservicedemo&utm_medium=referral"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-mp-event="Click TiDB Cloud Site Link"
-        >
-          Powered by{" "}
-          <Image
-            src="/tidb.svg"
-            alt="TiDB Cloud Logo"
-            width={138}
-            height={24}
-            priority
-          />
-        </a>
-      </footer>
-    </div>
-  );
-}
+//       <footer className="flex items-center justify-center mt-4">
+//         <a
+//           className="flex gap-2"
+//           href="https://tidbcloud.com/?utm_source=dataservicedemo&utm_medium=referral"
+//           target="_blank"
+//           rel="noopener noreferrer"
+//           data-mp-event="Click TiDB Cloud Site Link"
+//         >
+//           Powered by{" "}
+//           <Image
+//             src="/tidb.svg"
+//             alt="TiDB Cloud Logo"
+//             width={138}
+//             height={24}
+//             priority
+//           />
+//         </a>
+//       </footer>
+//     </div>
+//   );
+// }
