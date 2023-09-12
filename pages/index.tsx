@@ -89,13 +89,11 @@ function RankList({
           />
           <div className="ml-20 text-md hover:underline z-10">{index+1}</div>
           <div
-            className="ml-20 text-md p-1 max-w-[80%] hover:underline z-10"
+            className="ml-10 text-md p-1 max-w-[80%] hover:underline z-10"
           >
             <Link rel="stylesheet" href={{pathname:"/price", query:{name:i.name}}}>
-              {/* <setIns></> */}
               {i.name}
             </Link>
-            {/* {i.name} */}
           </div>
           <div className="mr-20 text-md">{i.value.toLocaleString("en-US")}</div>
         </div>
@@ -192,10 +190,12 @@ export default function Home() {
   function HotRankingLists(){
     var labeltime : string[] | undefined = [];
     var dataranksets = [];
-    let startT = moment('2023-08-20 00:00').format("YYYY-MM-DD hh:mm");
-    // var dynamicranks : DynamicRanking[] = [];
-
-    for (let i = 0; i < 10; i++) {
+    let startT = moment('2023-08-20 00:00').format("YYYY-MM-DD HH:mm");
+    let len :any = labels_instid? labels_instid.length : 1;
+    for(let i = 0;i < 100;i++){
+      labeltime.push(moment(startT).add(i,'hours').format("YYYY-MM-DD HH:mm"));
+    }
+    for (let i = 0; i < len; i++) {
       const crypto = labels_instid? labels_instid[i] : 'BTC/USDT';
       let cry = crypto;
       const { data: dynamicRanking } = useSWR(
@@ -205,11 +205,10 @@ export default function Home() {
       // const li = dynamicRanking?.data.rows.map((j) => j.hot_score);
       //   console.log(li?li[i]:"d");
       // setInstId(crypto);
-      let rank = dynamicRanking;
-      labeltime.push(moment(startT).add(i,'days').format("YYYY-MM-DD hh:mm"));
+      let rank = dynamicRanking; 
       
       dataranksets.push({
-        data : dynamicRanking?.data.rows.slice(0,10).map((i) => Number(i.hot_score)),
+        data : dynamicRanking?.data.rows.slice(0,100).map((i) => Number(i.hot_score)),
         label: crypto,
         borderColor: getrandomColor(),
         backgroundColor: getrandomColor(),
@@ -289,7 +288,7 @@ export default function Home() {
           data={
             hotRankingByBaseVolume?.data.rows.slice(0, 15).map((i) => ({
               name: i.instid,
-              value: Number(Number(i.hot_score).toFixed(2)),
+              value: Number(i.hot_score),
             })) ?? []
           }
         />
