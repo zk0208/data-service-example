@@ -17,6 +17,10 @@ import { Line } from "react-chartjs-2";
 import { useState } from "react";
 import Link from "next/link";
 import moment from "moment";
+import * as Highchartsl from 'highcharts';
+import Highcharts from 'highcharts/highstock';
+import HighchartsReact from 'highcharts-react-official';
+import HighchartsMore from 'highcharts/highcharts-more';
 
 
 export const config = {
@@ -209,34 +213,66 @@ export default function Home() {
       
       dataranksets.push({
         data : dynamicRanking?.data.rows.slice(0,100).map((i) => Number(i.hot_score)),
-        label: crypto,
-        borderColor: getrandomColor(),
-        backgroundColor: getrandomColor(),
+        name : crypto,
+        type: 'area',
       })
 
     }
-    
-
-    return (
-    <>
-    <Line options={{
-    responsive: true,
-    plugins: {
+    const optionP = {
+      chart:{
+          zooming : {
+              'type':'xy',
+          },
+      },
+      title:{
+          text:'Crypto price rank',
+      },
+      xAxis:{
+          categories: labeltime,
+      },
+      yAxis: {
+          title: {
+              text: 'price'
+          }
+      },
       legend: {
-        position: "top" as const,
+          enabled: true,
       },
-      title: {
-        display: true,
-        text: "Dynamic Cryptocurrency ranking",
+      plotOptions: {
+          area: {
+              fillColor: {
+                  linearGradient: {
+                      x1: 0,
+                      y1: 0,
+                      x2: 0,
+                      y2: 1
+                  },
+                  stops: [
+                      // [0, Highcharts.getOptions().colors[0]],
+                      // [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                  ]
+              },
+              marker: {
+                  radius: 2
+              },
+              lineWidth: 1,
+              states: {
+                  hover: {
+                      lineWidth: 1
+                  }
+              },
+              threshold: null
+          }
       },
-    },
-    // scales:{
-    //   y:{
-    //     display:true,
-    //     type: 'logarithmic',
-    //   }
-    // },
-  }} data={{labels: labeltime, datasets : dataranksets}}/>
+      series: dataranksets,
+  }
+
+  return (
+    <>
+      <HighchartsReact
+           highcharts = {Highchartsl}
+           options = {optionP}>
+       </HighchartsReact> 
     </>
     )
   }
