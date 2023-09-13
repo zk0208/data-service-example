@@ -154,14 +154,14 @@ function Chartk(optionk:Highcharts.Options) {
         `/api/gateway/get_index_candlesticks?exchange=${exchange}&instid=${instid}&min_time=${startTime}&max_time=${endTime}`,
         fetcher as Fetcher<CandleSticksByTime, string>
     );
-    const dataIndex = candleSticksByTime?.data.rows.slice(0,400).map((i) => [i.time, Number(i.open_price), Number(i.high_price), Number(i.low_price), Number(i.close_price)]);
+    const dataIndex = candleSticksByTime?.data.rows.map((i) => [i.time, Number(i.open_price), Number(i.high_price), Number(i.low_price), Number(i.close_price)]);
   
     const optionINdex:Highcharts.Options ={
         title : {
         text : 'IndexCandleSticks'
         },
         xAxis:{
-        categories : candleSticksByTime?.data.rows.slice(0,500).map((i) => i.time),
+        categories : candleSticksByTime?.data.rows.map((i) => i.time),
         },
         rangeSelector : {
         buttons :[{
@@ -349,14 +349,14 @@ function PriceCmpLists(){
         `/api/gateway/get_index_candlesticks?exchange=${ex}&instid=${instid}&min_time=${startTime}&max_time=${endTime}`,
         fetcher as Fetcher<CandleSticksByTime, string>
       );
-    LabelB = candleSticksByTime?.data.rows.slice(0,400).map((i) => i.time);
+    LabelB = candleSticksByTime?.data.rows.map((i) => i.time);
       
 
     //   let rank = candleSticksByTime;
     //   labeltime.push(moment(startT).add(i,'days').format("YYYY-MM-DD hh:mm:ss"));
       
       dataranksets.push({
-        data : candleSticksByTime?.data.rows.slice(0,400).map((i) => Number(i.close_price)),
+        data : candleSticksByTime?.data.rows.map((i) => Number(i.close_price)),
         name : ex,
         type: 'area',
       })
@@ -370,7 +370,7 @@ function PriceCmpLists(){
             },
         },
         title:{
-            text:'Crypto price rank',
+            text:'Crypto price',
         },
         xAxis:{
             categories: LabelB,
@@ -423,7 +423,7 @@ function PriceCmpLists(){
   }
   return (
     <div className="flex flex-col max-w-[880px] min-h-screen mx-auto gap-4 pt-8">
-        <div className="shadow-xl bg-white rounded p-4 w-full ">
+        {/* <div className="shadow-xl bg-white rounded p-4 w-full ">
             <header className="flex justify-between font-bold">
                 <div className="text-xl text-blue-400">
                     <Link rel="stylesheet" href="/">go back</Link>
@@ -468,16 +468,32 @@ function PriceCmpLists(){
                         }
                     }
                 }} data={ { labels, datasets }} />
-        </div>
+        </div> */}
         <div className="shadow-xl bg-white rounded p-4 md:flex-row md:min-h-[500px]">
+            <header className="flex justify-between font-bold">
+                <div className="text-xl text-blue-400">
+                    <Link rel="stylesheet" href="/">go back</Link>
+                </div>
+                
+                <div className="text-xs flex items-center">
+                    <span className="font-bold mr-1">instid:</span>
+                    <select value={instid} onChange={(e) => setInstId(e.target.value)}>
+                    {labels_instid?.map((i) => (
+                        <option key={i} value={i}>
+                        {i}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+            </header>
             <Chartk></Chartk>
         </div>
         
-        <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
+        {/* <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
             <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
                 <Pricek></Pricek>
             </div>
-        </div>
+        </div> */}
         <div className="flex gap-4 flex-col md:flex-row md:min-h-[500px]">
             <div className="shadow-xl bg-white rounded p-4 flex-1 flex-shrink-0 md:w-[49%]">
                 {/* <Line options={optionB} data={{labels: LabelB, datasets: dataB}} /> */}

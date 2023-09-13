@@ -196,7 +196,7 @@ export default function Home() {
     var dataranksets = [];
     let startT = moment('2023-08-20 00:00').format("YYYY-MM-DD HH:mm");
     let len :any = labels_instid? labels_instid.length : 1;
-    for(let i = 0;i < 100;i++){
+    for(let i = 0;i < 200;i++){
       labeltime.push(moment(startT).add(i,'hours').format("YYYY-MM-DD HH:mm"));
     }
     for (let i = 0; i < len; i++) {
@@ -212,7 +212,7 @@ export default function Home() {
       let rank = dynamicRanking; 
       
       dataranksets.push({
-        data : dynamicRanking?.data.rows.slice(0,100).map((i) => Number(i.hot_score)),
+        data : dynamicRanking?.data.rows.slice(0,200).map((i) => Number(i.hot_score)),
         name : crypto,
         type: 'area',
       })
@@ -225,7 +225,7 @@ export default function Home() {
           },
       },
       title:{
-          text:'Crypto price rank',
+          text:'Crypto hot score',
       },
       xAxis:{
           categories: labeltime,
