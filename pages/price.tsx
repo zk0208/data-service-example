@@ -226,7 +226,23 @@ function Chartk(optionk:Highcharts.Options) {
 return (
     <>
         <div>
-            <header className="flex justify-end">
+            <header className="flex justify-between font-bold">
+                <div className="text-xl text-blue-400">
+                    <Link rel="stylesheet" href="/">go back</Link>
+                </div>
+                
+                <div className="text-xs flex items-center">
+                    <span className="font-bold mr-1">Instid:</span>
+                    <select value={instid} onChange={(e) => setInstId(e.target.value)}>
+                    {labels_instid?.map((i) => (
+                        <option key={i} value={i}>
+                        {i}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+            </header>
+            <header className="flex justify-end font-bold">
                 <div className="text-xs flex items-center">
                 <span className="font-bold mr-1">Exchange:</span>
                 <select value={exchange} onChange={(e) => setExchange(e.target.value)}>
@@ -470,13 +486,13 @@ function PriceCmpLists(){
                 }} data={ { labels, datasets }} />
         </div> */}
         <div className="shadow-xl bg-white rounded p-4 md:flex-row md:min-h-[500px]">
-            <header className="flex justify-between font-bold">
+            {/* <header className="flex justify-between font-bold">
                 <div className="text-xl text-blue-400">
                     <Link rel="stylesheet" href="/">go back</Link>
                 </div>
                 
                 <div className="text-xs flex items-center">
-                    <span className="font-bold mr-1">instid:</span>
+                    <span className="font-bold mr-1">Instid:</span>
                     <select value={instid} onChange={(e) => setInstId(e.target.value)}>
                     {labels_instid?.map((i) => (
                         <option key={i} value={i}>
@@ -485,7 +501,7 @@ function PriceCmpLists(){
                     ))}
                     </select>
                 </div>
-            </header>
+            </header> */}
             <Chartk></Chartk>
         </div>
         
